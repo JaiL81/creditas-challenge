@@ -63,22 +63,15 @@ class Subscription(override val name: String, override val price: Double): Produ
 class Book(override val name: String, override val price: Double): Product(name, price)
 class DigitalMedia(override val name: String, override val price: Double): Product(name, price)
 
-enum class ProductType {
-    PHYSICAL,
-    BOOK,
-    DIGITAL,
-    MEMBERSHIP
-}
-
 class Address
 
 class Customer
 
 fun main(args : Array<String>) {
-    val shirt = Product("Flowered t-shirt", 35.00)
-    val netflix = Product("Familiar plan", 29.90)
-    val book = Product("The Hitchhiker's Guide to the Galaxy", 120.00)
-    val music = Product("Stairway to Heaven", 5.00)
+    val shirt = PhysicalItem("Flowered t-shirt", 35.00)
+    val netflix = Subscription("Familiar plan", 29.90)
+    val book = Book("The Hitchhiker's Guide to the Galaxy", 120.00)
+    val music = DigitalMedia("Stairway to Heaven", 5.00)
 
     val order = Order(Customer(), Address())
 
