@@ -57,24 +57,21 @@ data class Invoice(val order: Order) {
     val shippingAddress: Address = order.address
 }
 
-data class Product(val name: String, val type: ProductType, val price: Double)
-
-enum class ProductType {
-    PHYSICAL,
-    BOOK,
-    DIGITAL,
-    MEMBERSHIP
-}
+open class Product(open val name: String, open val price: Double)
+class PhysicalItem(override val name: String, override val price: Double): Product(name, price)
+class Subscription(override val name: String, override val price: Double): Product(name, price)
+class Book(override val name: String, override val price: Double): Product(name, price)
+class DigitalMedia(override val name: String, override val price: Double): Product(name, price)
 
 class Address
 
 class Customer
 
 fun main(args : Array<String>) {
-    val shirt = Product("Flowered t-shirt", ProductType.PHYSICAL, 35.00)
-    val netflix = Product("Familiar plan", ProductType.MEMBERSHIP, 29.90)
-    val book = Product("The Hitchhiker's Guide to the Galaxy", ProductType.BOOK, 120.00)
-    val music = Product("Stairway to Heaven", ProductType.DIGITAL, 5.00)
+    val shirt = PhysicalItem("Flowered t-shirt", 35.00)
+    val netflix = Subscription("Familiar plan", 29.90)
+    val book = Book("The Hitchhiker's Guide to the Galaxy", 120.00)
+    val music = DigitalMedia("Stairway to Heaven", 5.00)
 
     val order = Order(Customer(), Address())
 
@@ -85,5 +82,6 @@ fun main(args : Array<String>) {
 
     order.pay(CreditCard("43567890-987654367"))
     // now, how to deal with shipping rules then?
+    println(order.totalAmount)
 
 }
