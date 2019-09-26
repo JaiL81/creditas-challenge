@@ -57,7 +57,7 @@ data class Invoice(val order: Order) {
     val shippingAddress: Address = order.address
 }
 
-open class Product(open val name: String, open val price: Double)
+abstract class Product(open val name: String, open val price: Double)
 class PhysicalItem(override val name: String, override val price: Double): Product(name, price)
 class Subscription(override val name: String, override val price: Double): Product(name, price)
 class Book(override val name: String, override val price: Double): Product(name, price)
