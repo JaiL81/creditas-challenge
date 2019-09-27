@@ -44,7 +44,7 @@ data class OrderItem(val product: Product, val quantity: Int) {
 data class Payment(val order: Order, val paymentMethod: PaymentMethod) {
     val paidAt = Date()
     val authorizationNumber = paidAt.time
-    val am1ount = order.totalAmount
+    val amount = order.totalAmount
     val invoice = Invoice(order)
 }
 
