@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 
 // TODO extract magic numbers to constants
+const val CREDIT_CARD_NUMBER = "43567890-987654367"
 internal class OrderProcessorTest {
     private val order = Order(Customer(), Address())
 
@@ -27,8 +28,28 @@ internal class OrderProcessorTest {
 
     @Test
     fun `payment has been successful`() {
-        order.pay(CreditCard("43567890-987654367"))
+        order.pay(CreditCard(CREDIT_CARD_NUMBER))
         assertNotNull(order.closedAt)
         assertNotNull(order.payment)
+    }
+    @Test
+    fun `duplicate payments on the same order shouldn't be possible`() {
+        order.pay(CreditCard(CREDIT_CARD_NUMBER))
+        assertNotNull(order.closedAt)
+        assertNotNull(order.payment)
+        val exception = assertThrows(Exception::class.java) {
+            order.pay(CreditCard(CREDIT_CARD_NUMBER))
+        }
+
+        assertEquals(exception.message, "The order has already been paid!")
+    }
+    @Test
+    fun `empty orders shouldn't be paid`() {
+        val emptyOrder = Order(Customer(), Address())
+        val exception = assertThrows(Exception::class.java) {
+            emptyOrder.pay(CreditCard(CREDIT_CARD_NUMBER))
+        }
+
+        assertEquals(exception.message, "Empty order can not be paid!")
     }
 }
