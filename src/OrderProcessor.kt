@@ -81,7 +81,7 @@ class PhysicalItem(override val name: String, override val price: Double) : Prod
 class Subscription(override val name: String, override val price: Double) : Product(name, price) {
     var active: Boolean = false
     override fun finish(payment: Payment) {
-        active = true;
+        active = true
         sendEmail(payment.order.customer.email, "Your subscription to $name has been activated")
     }
 }
