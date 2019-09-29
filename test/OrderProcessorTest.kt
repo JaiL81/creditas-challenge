@@ -115,7 +115,12 @@ internal class OrderProcessorTest {
             assertEquals(discountVoucher.currency, currency)
             assertEquals(discountVoucher.payment, order.payment)
 
-            verify { sendEmail(CUSTOMER_EMAIL, "You have purchased a subscription to $digitalMediaName with a price of $digitalMediaPrice$currency") }
+            verify {
+                sendEmail(
+                    CUSTOMER_EMAIL,
+                    "You have purchased a subscription to $digitalMediaName with a price of $digitalMediaPrice$currency"
+                )
+            }
         }
 
         @Test

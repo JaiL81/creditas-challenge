@@ -38,6 +38,7 @@ class DigitalMedia(override val name: String, override val price: Double) : Prod
 fun printShipmentLabel(address: Address, additionalText: String = "") {
     // TODO here should be placed the print shipment label logic
 }
+
 fun sendEmail(email: String, text: String) {
     // TODO here should be placed the sending email logic
 }
