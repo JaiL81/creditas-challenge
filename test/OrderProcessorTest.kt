@@ -16,32 +16,19 @@ internal class OrderProcessorTest {
     @Nested
     inner class PaymentTests {
 
-        @BeforeEach
-        fun setUp() {
-            val shirt = PhysicalItem("Flowered t-shirt", 35.00)
-            val netflix = Subscription("Familiar plan", 29.90)
-            val book = Book("The Hitchhiker's Guide to the Galaxy", 120.00)
-            val music = DigitalMedia("Stairway to Heaven", 5.00)
-
-            order.addProduct(shirt, 2)
-            order.addProduct(netflix, 1)
-            order.addProduct(book, 1)
-            order.addProduct(music, 1)
-
-            assertEquals(order.totalAmount, 224.90)
-            assertNull(order.payment)
-            assertNull(order.closedAt)
-        }
-
         @Test
         fun `payment has been successful`() {
+            createMultiProductOrder()
             order.pay(creditCard)
+
             assertNotNull(order.payment)
         }
 
         @Test
         fun `duplicate payments on the same order shouldn't be possible`() {
+            createMultiProductOrder()
             order.pay(creditCard)
+
             assertNotNull(order.payment)
             val exception = assertThrows(Exception::class.java) {
                 order.pay(creditCard)
@@ -58,6 +45,22 @@ internal class OrderProcessorTest {
             }
 
             assertEquals(exception.message, "Empty order can not be paid!")
+        }
+
+        private fun createMultiProductOrder() {
+            val shirt = PhysicalItem("Flowered t-shirt", 35.00)
+            val netflix = Subscription("Familiar plan", 29.90)
+            val book = Book("The Hitchhiker's Guide to the Galaxy", 120.00)
+            val music = DigitalMedia("Stairway to Heaven", 5.00)
+
+            order.addProduct(shirt, 2)
+            order.addProduct(netflix, 1)
+            order.addProduct(book, 1)
+            order.addProduct(music, 1)
+
+            assertEquals(order.totalAmount, 224.90)
+            assertNull(order.payment)
+            assertNull(order.closedAt)
         }
     }
 
