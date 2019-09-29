@@ -1,7 +1,6 @@
 package challenge
 
-import java.lang.Exception
-import java.util.*
+import java.util.Date
 
 class Order(val customer: Customer, val address: Address) {
     private val items = mutableListOf<OrderItem>()
@@ -13,7 +12,7 @@ class Order(val customer: Customer, val address: Address) {
         get() = items.sumByDouble { it.total }
 
     fun addProduct(product: Product, quantity: Int) {
-        var productAlreadyAdded = items.any { it.product == product }
+        val productAlreadyAdded = items.any { it.product == product }
         if (productAlreadyAdded)
             throw Exception("The product have already been added. Change the amount if you want more.")
 
@@ -28,7 +27,16 @@ class Order(val customer: Customer, val address: Address) {
             throw Exception("Empty order can not be paid!")
 
         payment = Payment(this, method)
+    }
 
+    fun finish() {
+        if (payment == null) {
+            throw Exception("The order can't be finished if it has not been paid")
+        }
+        if (closedAt != null) {
+            throw Exception("The order has already been closed")
+        }
+        items.forEach { item: OrderItem -> item.product.applySubmissionRules(this.payment!!) }
         close()
     }
 
@@ -44,7 +52,7 @@ data class OrderItem(val product: Product, val quantity: Int) {
 data class Payment(val order: Order, val paymentMethod: PaymentMethod) {
     val paidAt = Date()
     val authorizationNumber = paidAt.time
-    val am1ount = order.totalAmount
+    val amount = order.totalAmount
     val invoice = Invoice(order)
 }
 
@@ -57,23 +65,19 @@ data class Invoice(val order: Order) {
     val shippingAddress: Address = order.address
 }
 
-abstract class Product(open val name: String, open val price: Double)
-class PhysicalItem(override val name: String, override val price: Double): Product(name, price)
-class Subscription(override val name: String, override val price: Double): Product(name, price)
-class Book(override val name: String, override val price: Double): Product(name, price)
-class DigitalMedia(override val name: String, override val price: Double): Product(name, price)
-
 class Address
+class DiscountVoucher(val value: Int, val currency: String, val payment: Payment)
+class Customer(val email: String) {
+    var discounts = mutableListOf<DiscountVoucher>()
+}
 
-class Customer
-
-fun main(args : Array<String>) {
+fun main(args: Array<String>) {
     val shirt = PhysicalItem("Flowered t-shirt", 35.00)
     val netflix = Subscription("Familiar plan", 29.90)
     val book = Book("The Hitchhiker's Guide to the Galaxy", 120.00)
     val music = DigitalMedia("Stairway to Heaven", 5.00)
 
-    val order = Order(Customer(), Address())
+    val order = Order(Customer("order.custome@email.comr"), Address())
 
     order.addProduct(shirt, 2)
     order.addProduct(netflix, 1)
@@ -82,6 +86,4 @@ fun main(args : Array<String>) {
 
     order.pay(CreditCard("43567890-987654367"))
     // now, how to deal with shipping rules then?
-    println(order.totalAmount)
-
 }
