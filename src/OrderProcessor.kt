@@ -36,7 +36,7 @@ class Order(val customer: Customer, val address: Address) {
         if (closedAt != null) {
             throw Exception("The order has already been closed")
         }
-        items.forEach { item: OrderItem -> item.product.finish(this.payment!!) }
+        items.forEach { item: OrderItem -> item.product.applySubmissionRules(this.payment!!) }
         close()
     }
 
@@ -69,31 +69,31 @@ fun printShipmentLabel(address: Address, additionalText: String = "") {}
 fun sendEmail(email: String, text: String) {}
 
 abstract class Product(open val name: String, open val price: Double) {
-    abstract fun finish(payment: Payment)
+    abstract fun applySubmissionRules(payment: Payment)
 }
 
 class PhysicalItem(override val name: String, override val price: Double) : Product(name, price) {
-    override fun finish(payment: Payment) {
+    override fun applySubmissionRules(payment: Payment) {
         printShipmentLabel(payment.order.address)
     }
 }
 
 class Subscription(override val name: String, override val price: Double) : Product(name, price) {
     var active: Boolean = false
-    override fun finish(payment: Payment) {
+    override fun applySubmissionRules(payment: Payment) {
         active = true
         sendEmail(payment.order.customer.email, "Your subscription to $name has been activated")
     }
 }
 
 class Book(override val name: String, override val price: Double) : Product(name, price) {
-    override fun finish(payment: Payment) {
+    override fun applySubmissionRules(payment: Payment) {
         printShipmentLabel(payment.order.address, "This is a tax exempt item")
     }
 }
 
 class DigitalMedia(override val name: String, override val price: Double) : Product(name, price) {
-    override fun finish(payment: Payment) {
+    override fun applySubmissionRules(payment: Payment) {
         val currency = "$"
         sendEmail(
             payment.order.customer.email,
