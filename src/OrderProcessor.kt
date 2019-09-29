@@ -104,7 +104,7 @@ class DigitalMedia(override val name: String, override val price: Double) : Prod
 }
 
 class Address
-class DiscountVoucher(val quantity: Int, val currency: String, val payment: Payment)
+class DiscountVoucher(val value: Int, val currency: String, val payment: Payment)
 class Customer(val email: String) {
     var discounts = mutableListOf<DiscountVoucher>()
 }
