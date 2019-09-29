@@ -1,6 +1,6 @@
 package challenge
 
-import java.util.*
+import java.util.Date
 
 class Order(val customer: Customer, val address: Address) {
     private val items = mutableListOf<OrderItem>()
