@@ -66,9 +66,7 @@ internal class OrderProcessorTest {
         fun `subscription product should be active after finishing order`() {
             val netflix = Subscription("Familiar plan", 29.90)
 
-            order.addProduct(netflix, 1)
-            order.pay(creditCard)
-            order.finish()
+            completeOrder(netflix)
 
             assertNotNull(order.closedAt)
             assertTrue(netflix.active)
@@ -78,9 +76,7 @@ internal class OrderProcessorTest {
         fun `digital media product should apply a discount voucher of 10$ after finishing order`() {
             val music = DigitalMedia("Stairway to Heaven", 5.00)
 
-            order.addProduct(music, 1)
-            order.pay(creditCard)
-            order.finish()
+            completeOrder(music)
 
             assertNotNull(order.closedAt)
             assertNotNull(order.customer.discounts)
@@ -94,13 +90,31 @@ internal class OrderProcessorTest {
         }
 
         @Test
-        fun `empty orders shouldn't be finished`() {
+        fun `not paid orders shouldn't be finished`() {
+            val exception = assertThrows(Exception::class.java) {
+                order.finish()
+            }
 
+            assertEquals(exception.message, "The order can't be finished if it has not been paid")
         }
 
         @Test
         fun `an already closed order shouldn't be finished again`() {
+            val movie = DigitalMedia("Star Wars", 5.00)
 
+            completeOrder(movie)
+
+            val exception = assertThrows(Exception::class.java) {
+                order.finish()
+            }
+
+            assertEquals(exception.message, "The order has already been closed")
+        }
+
+        private fun completeOrder(product: Product) {
+            order.addProduct(product, 1)
+            order.pay(creditCard)
+            order.finish()
         }
     }
 }
